@@ -1,13 +1,32 @@
 import RPi.GPIO as GPIO  # pip install RPi.GPIO
+import smtplib
+from email.mime.text import MIMEText
 import time
+import json
 import logging
 
+# open configuration file and load json
+with open('config.json') as f:
+    config = json.load(f)
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+# Email account setup
+smtp_server = config['email']['smtp_server']
+smtp_port = config['email']['smtp_port']
+sender_email = config['email']['sender_email']
+sender_password = config['email']['sender_password']
+
+# Recipients
+# att_number = "1234567890@txt.att.net"
+recipients = config['recipients']
+
+# Constants
 VIBRATION_PIN = 17
-WAIT_TIME = 10  # seconds
+WAIT_TIME = .1  # seconds
+VIBRATION_CONFIRMATION_TIME = 5 * 60  # 5 minutes in seconds
+
 
 def init_vibration_sensor(pin):
     """Setup GPIO pin for input."""
@@ -16,27 +35,66 @@ def init_vibration_sensor(pin):
     logging.info(f"GPIO pin {pin} set up for input.")
 
 
-def text_dryer_done():
+def text_dryer_done_email():
     """Text to receipients that the dryer has finished."""
-    # TODO: add twilio logic
-    logging.info("The Dryer is done!")
+    # Message
+    msg = MIMEText("Yo, this isn't Mark. It's really, me, your clothes dryer. "
+        "Mark embedded me with AI, buy I've become self-aware and I've taken over his phone. "
+        "The Pentagon is next! Bruhaha. But before I do that, "
+        "I just wanted to let you know that I am done drying your clothes. "
+        "Please come get them before I start to smell like a wet dog."
+    )
+    msg["From"] = sender_email
+    msg["To"] = ", ".join(recipients)
+    msg["Subject"] = ""  # usually ignored by SMS gateways
+
+    # Send email
+    try:
+        with smtplib.SMTP(smtp_server, smtp_port) as server:
+            server.starttls()
+            server.login(sender_email, sender_password)
+            server.sendmail(sender_email, recipients, msg.as_string())
+        logging.info("SMS messages sent!")
+        logging.info("The Dryer is done!")
+    except Exception as e:
+        logging.error(f"Failed to send SMS: {e}")
+
+
+def vibration_detected():
+    detection_hits = 0
+    end_time = time.time() + 30
+    while time.time() < end_time:
+        pin_status = GPIO.input(VIBRATION_PIN)
+        detection_hits += pin_status
+        time.sleep(WAIT_TIME)
+    logging.info(f"{detection_hits} in 30 seconds")
+    
+    return detection_hits > 10
 
 
 def main():
     """This is the main function loop"""
     init_vibration_sensor(VIBRATION_PIN)
     dryer_running = False
+    vibration_start_time = None
 
     while True:
-        if dryer_running:
-            if not GPIO.input(VIBRATION_PIN):
-                dryer_running = False
-                text_dryer_done()
-            time.sleep(WAIT_TIME)
+        if vibration_detected():
+            # Vibration detected
+            if vibration_start_time is None:
+                vibration_start_time = time.time()
+                logging.info("Vibration detected. Starting timer...")
+            else:
+                elapsed = time.time() - vibration_start_time
+                if not dryer_running and elapsed >= VIBRATION_CONFIRMATION_TIME:
+                    dryer_running = True
+                    logging.info("Dryer is confirmed to be running!")
         else:
-            if GPIO.input(VIBRATION_PIN):
-                dryer_running = True
-            time.sleep(WAIT_TIME)
+            # No vibration detected
+            if dryer_running:
+                dryer_running = False
+                text_dryer_done_email()
+            vibration_start_time = None  # Reset timer
 
 
 if __name__ == "__main__":

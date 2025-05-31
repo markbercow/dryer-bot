@@ -1,0 +1,16 @@
+{
+  "email": {
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 587,
+    "sender_email": "username",
+    "sender_password": "application password"
+  },
+  "recipients": [
+    "phone_number@msg.fi.google.com"
+  ],
+  "dryer": {
+    "vibration_pin": 17,
+    "wait_time": 0.1,
+    "confirmation_time": 300
+  }
+}
