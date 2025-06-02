@@ -19,8 +19,8 @@ def vibration_detected():
     end_time = time.time() + 5
     while time.time() < end_time:
         pin_status = GPIO.input(VIBRATION_PIN)
-        detection_hits = detection_hits + pin_status
-        time.sleep(.1)
+        detection_hits = detection_hits + (1 - pin_status)
+        time.sleep(.01)
     logging.info(f"{detection_hits} in 5 seconds")
     if detection_hits > 0:
         return True

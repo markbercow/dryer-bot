@@ -24,8 +24,8 @@ recipients = config['recipients']
 
 # Constants
 VIBRATION_PIN = 17
-WAIT_TIME = .1  # seconds
-VIBRATION_CONFIRMATION_TIME = 5 * 60  # 5 minutes in seconds
+WAIT_TIME = 0.01  # seconds
+VIBRATION_CONFIRMATION_TIME = 3 * 60  # 5 minutes in seconds
 
 
 def init_vibration_sensor(pin):
@@ -39,7 +39,7 @@ def text_dryer_done_email():
     """Text to receipients that the dryer has finished."""
     # Message
     msg = MIMEText("Yo, this isn't Mark. It's really, me, your clothes dryer. "
-        "Mark embedded me with AI, buy I've become self-aware and I've taken over his phone. "
+        "Mark embedded me with AI, but I've become self-aware and I've taken over his phone. "
         "The Pentagon is next! Bruhaha. But before I do that, "
         "I just wanted to let you know that I am done drying your clothes. "
         "Please come get them before I start to smell like a wet dog."
@@ -65,7 +65,7 @@ def vibration_detected():
     end_time = time.time() + 30
     while time.time() < end_time:
         pin_status = GPIO.input(VIBRATION_PIN)
-        detection_hits += pin_status
+        detection_hits += (1 - pin_status)
         time.sleep(WAIT_TIME)
     logging.info(f"{detection_hits} in 30 seconds")
     
