@@ -40,6 +40,8 @@ A Raspberry Pi Zero 2 W is used for this project. Any Raspberry Pi will work, ev
 
 ## Roadmap
 
+- Move to a RPi Pico. This should be straight forward
+
 - I would like to refactor using an object oriented design. Some day
 
 - Since carriers are eliminating their email-to-text gateways, I'll need to come up with another way of triggering text-based notifications
