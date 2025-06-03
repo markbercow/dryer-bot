@@ -26,9 +26,9 @@ recipients = config['recipients']
 messages = config['messages']
 
 # Constants
-VIBRATION_PIN = 17
-WAIT_TIME = 0.01  # seconds
-VIBRATION_CONFIRMATION_TIME = 3 * 60  # 5 minutes in seconds
+VIBRATION_PIN = config["dryer"]["vibration_pin"]
+WAIT_TIME = config["dryer"]["wait_time"]
+VIBRATION_CONFIRMATION_TIME = config["dryer"]["confirmation_time"]
 
 
 def init_vibration_sensor(pin):
@@ -39,15 +39,13 @@ def init_vibration_sensor(pin):
 
 
 def text_dryer_done_email():
-    """Text to receipients that the dryer has finished."""
-    # Message
-    selected_message = random.choice(messages[1:])
+    """Text via email gateway to receipients that the dryer has finished."""
+    selected_message = random.choice(messages[1:])  # Randomly select a message. Leave messages[0] for future welcome message
     msg = MIMEText(selected_message)
     msg["From"] = sender_email
     msg["To"] = ", ".join(recipients)
-    msg["Subject"] = ""  # usually ignored by SMS gateways
+    msg["Subject"] = ""
 
-    # Send email
     try:
         with smtplib.SMTP(smtp_server, smtp_port) as server:
             server.starttls()
@@ -60,15 +58,18 @@ def text_dryer_done_email():
 
 
 def vibration_detected():
+    """These sensors are very fickle. You have to check them for a period of time to determine if vibration is occuring
+    
+       This function samples the GPIO for 30 seconds. If the number of vibration detections exceeds a threshold, assume vibration is occurring."""
     detection_hits = 0
-    end_time = time.time() + 30
+    end_time = time.time() + 30  # number of seconds to poll GPIO pin
     while time.time() < end_time:
         pin_status = GPIO.input(VIBRATION_PIN)
-        detection_hits += (1 - pin_status)
+        detection_hits += (1 - pin_status)  # the pin on this sensor is normally OPEN. So a "1" indicates vibration
         time.sleep(WAIT_TIME)
     logging.info(f"{detection_hits} in 30 seconds")
     
-    return detection_hits > 10
+    return detection_hits > 10  # Threshold is set to 10. So if >10 vibration detects are recorded during the timespan, vibration is in progress.
 
 
 def main():
@@ -80,20 +81,20 @@ def main():
     while True:
         if vibration_detected():
             # Vibration detected
-            if vibration_start_time is None:
+            if vibration_start_time is None:  # start timing to determine if the dryer is running.
                 vibration_start_time = time.time()
                 logging.info("Vibration detected. Starting timer...")
             else:
                 elapsed = time.time() - vibration_start_time
-                if not dryer_running and elapsed >= VIBRATION_CONFIRMATION_TIME:
+                if not dryer_running and elapsed >= VIBRATION_CONFIRMATION_TIME:  # if vibration is detected long enough, the dryer is running.
                     dryer_running = True
                     logging.info("Dryer is confirmed to be running!")
         else:
             # No vibration detected
             if dryer_running:
                 dryer_running = False
-                text_dryer_done_email()
-            vibration_start_time = None  # Reset timer
+                text_dryer_done_email()  # send a text (via email) that the dryer cycle has completed.
+            vibration_start_time = None  
 
 
 if __name__ == "__main__":

@@ -12,5 +12,13 @@
     "vibration_pin": 17,
     "wait_time": 0.1,
     "confirmation_time": 300
-  }
+  },
+  "messages": [
+    "Yo, this isn't Mark. It's really, me, your clothes dryer. Mark embedded me with AI, but I've become self-aware and I've taken over his phone. The Pentagon is next! Bruhaha. But before I do that, I just wanted to let you know that I am done drying your clothes. Please come get them before I start to smell like a wet dog.",
+    "Hey! I've dried your clothes (or whatever is in me).",
+    "Please empty me. I'm hot and need a break.",
+    "Did you not hear my bells going off? Jeez, come take your stuff.",
+    "The cycle is done.",
+    "I don't have arms and legs. Do you job and empty me."
+  ]
 }
