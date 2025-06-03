@@ -3,6 +3,7 @@ import smtplib
 from email.mime.text import MIMEText
 import time
 import json
+import random
 import logging
 
 # open configuration file and load json
@@ -19,8 +20,10 @@ sender_email = config['email']['sender_email']
 sender_password = config['email']['sender_password']
 
 # Recipients
-# att_number = "1234567890@txt.att.net"
 recipients = config['recipients']
+
+# Messages
+messages = config['messages']
 
 # Constants
 VIBRATION_PIN = 17
@@ -38,12 +41,8 @@ def init_vibration_sensor(pin):
 def text_dryer_done_email():
     """Text to receipients that the dryer has finished."""
     # Message
-    msg = MIMEText("Yo, this isn't Mark. It's really, me, your clothes dryer. "
-        "Mark embedded me with AI, but I've become self-aware and I've taken over his phone. "
-        "The Pentagon is next! Bruhaha. But before I do that, "
-        "I just wanted to let you know that I am done drying your clothes. "
-        "Please come get them before I start to smell like a wet dog."
-    )
+    selected_message = random.choice(messages[1:])
+    msg = MIMEText(selected_message)
     msg["From"] = sender_email
     msg["To"] = ", ".join(recipients)
     msg["Subject"] = ""  # usually ignored by SMS gateways
