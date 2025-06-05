@@ -4,7 +4,12 @@ from app.vibration import monitor_dryer
 import RPi.GPIO as GPIO
 import logging
 
+# Set up application logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Suppress Werkzeug's access logs
+werkzeug_log = logging.getLogger('werkzeug')
+werkzeug_log.setLevel(logging.ERROR)
 
 if __name__ == "__main__":
     try:

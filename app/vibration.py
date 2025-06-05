@@ -1,6 +1,7 @@
 import time
 import RPi.GPIO as GPIO
 import logging
+from datetime import datetime
 from app.status import dryer_status
 from app.notify import text_dryer_done_email
 from app.config import config
