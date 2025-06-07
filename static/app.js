@@ -1,16 +1,20 @@
-async function updateStatus() {
-  try {
-    const res = await fetch("/status");
-    const data = await res.json();
-    document.getElementById("running").textContent = data.running ? "✅ Yes" : "❌ No";
-    document.getElementById("elapsed").textContent = data.elapsed_time + " seconds";
-    document.getElementById("last").textContent = data.last_completed || "N/A";
-  } catch (err) {
-    console.error("Status update failed:", err);
-  }
-}
-
 document.addEventListener("DOMContentLoaded", () => {
-  updateStatus();
-  setInterval(updateStatus, 5000);
+  const socket = io();
+  const statusLight = document.getElementById("connection-status");
+
+  socket.on("connect", () => {
+    statusLight.classList.remove("disconnected");
+    statusLight.classList.add("connected");
+  });
+
+  socket.on("disconnect", () => {
+    statusLight.classList.remove("connected");
+    statusLight.classList.add("disconnected");
+  });
+
+  socket.on("status", (data) => {
+    document.getElementById("running").textContent = data.running ? "✅ Yes" : "❌ No";
+    document.getElementById("elapsed").textContent = data.elapsed_time;
+    document.getElementById("last").textContent = data.last_completed || "N/A";
+  });
 });

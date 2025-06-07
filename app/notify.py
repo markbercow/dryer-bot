@@ -28,4 +28,3 @@ def text_dryer_done_email():
         logging.info("SMS messages sent!")
     except Exception as e:
         logging.error(f"Failed to send SMS: {e}")
-        

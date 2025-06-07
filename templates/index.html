@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dryer Status</title>
-  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="/static/styles.css" />
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script src="/static/app.js" defer></script>
 </head>
 <body>
@@ -13,6 +14,8 @@
     <p><strong>Running:</strong> <span id="running">...</span></p>
     <p><strong>Elapsed Time:</strong> <span id="elapsed">...</span></p>
     <p><strong>Last Completed:</strong> <span id="last">...</span></p>
+
+    <div id="connection-status" class="status-indicator disconnected" title="WebSocket connection status"></div>
   </div>
 </body>
 </html>

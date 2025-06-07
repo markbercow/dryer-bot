@@ -37,10 +37,66 @@ h1 {
   padding: 1.25rem;
   margin-bottom: 1rem;
   box-sizing: border-box;
+  position: relative; /* Needed to position the indicator */
 }
 
 .status p {
   margin: 0.5rem 0;
   font-size: 1.1rem;
   line-height: 1.4;
+}
+
+.status-indicator {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: gray;
+  border: 2px solid var(--card-bg);
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.4),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.2),
+    0 0 5px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s ease;
+}
+
+/* 3D style + pulse animation when connected */
+.status-indicator.connected {
+  background-color: #4caf50;
+  animation: pulse 4s ease-in-out infinite;
+  box-shadow:
+    0 0 6px rgba(76, 175, 80, 0.6),
+    0 0 12px rgba(76, 175, 80, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.4),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* static red when disconnected */
+.status-indicator.disconnected {
+  background-color: #f44336;
+  animation: none;
+  box-shadow:
+    0 0 6px rgba(244, 67, 54, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 0.4),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Pulse animation keyframes */
+@keyframes pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 6px rgba(76, 175, 80, 0.6),
+      0 0 12px rgba(76, 175, 80, 0.4),
+      inset 0 1px 2px rgba(255, 255, 255, 0.4),
+      inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 0 10px rgba(76, 175, 80, 0.8),
+      0 0 20px rgba(76, 175, 80, 0.6),
+      inset 0 1px 2px rgba(255, 255, 255, 0.4),
+      inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+  }
 }
