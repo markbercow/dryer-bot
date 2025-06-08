@@ -36,7 +36,7 @@ def formatted_time(seconds):
 def monitor_dryer():
     dryer_running = False
     vibration_start_time = None
-    time.sleep(3)
+    time.sleep(1)
     socketio.emit("status", dryer_status)
     while True:
         if vibration_detected():
